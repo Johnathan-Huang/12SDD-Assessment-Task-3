@@ -1,3 +1,11 @@
 import pygame
 import sys
 import os
+import turtle
+import matplotlib
+import scipy
+import SpacePy
+import poliastro
+import astropy
+import numpy
+import pandas

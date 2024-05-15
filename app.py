@@ -17,23 +17,31 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWid
 
 def window():
     app = QApplication(sys.argv)
-    win = QMainWindow()
-    win.setGeometry(500, 500, 1920, 1080)
-    win.setWindowTitle(" Space Simulation ")
-
-    label = QtWidgets.QLabel(win)
-    label.setText(" Placeholder ")
-    label.move(10,10)
-
-    b1 = QtWidgets.QPushButton(win)
-    b1.setText(" Button 1 ")
-    b1.move(50,50)
-    b1.clicked.connect(clicked)
-
+    win = MyWindow()
     win.show()
     sys.exit(app.exec_())
 
 def clicked():
     print(" Button Clicked ")
+
+class MyWindow(QMainWindow):
+    def __init__(self):
+        super(MyWindow, self).__init__()
+        self.setGeometry(500, 500, 1920, 1080)
+        self.setWindowTitle(" Space Simulation ")
+        self.initUI()
+
+    def initUI(self):
+        self.label = QtWidgets.QLabel(self)
+        self.label.setText(" Placeholder ")
+        self.label.move(10,10)
+
+        self.b1 = QtWidgets.QPushButton(self)
+        self.b1.setText(" Button 1 ")
+        self.b1.move(50,50)
+        self.b1.clicked.connect(self.clicked)
+
+    def clicked(self):
+        self.label.setText(" Button Clicked ")
 
 window()

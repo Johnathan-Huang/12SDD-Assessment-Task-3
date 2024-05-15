@@ -43,5 +43,9 @@ class MyWindow(QMainWindow):
 
     def clicked(self):
         self.label.setText(" Button Clicked ")
+        self.update()
+
+    def update(self):
+        self.label.adjustSize()
 
 window()

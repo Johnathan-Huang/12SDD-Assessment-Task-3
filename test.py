@@ -56,7 +56,7 @@ class Planet:
             # Convert spline points to integer and create updated points list
             updated_points = [(int(out[0][i]), int(out[1][i])) for i in range(len(out[0]))]
 
-            pygame.draw.lines(win, self.color, False, updated_points)
+            pygame.draw.aalines(win, self.color, False, updated_points)
 
         pygame.gfxdraw.aacircle(win, x, y, self.radius, self.color)
         pygame.gfxdraw.filled_circle(win, x, y, self.radius, self.color)

@@ -16,7 +16,7 @@ BLUE = (100, 149, 237)
 RED = (188, 39, 50)
 DARK_GREY = (80, 78, 81)
 
-FONT = pygame.font.SysFont("arial", 16)
+FONT = pygame.font.SysFont("comicsans", 16)
 
 class Planet:
     AU = 149.6e6 * 1000
@@ -32,31 +32,30 @@ class Planet:
         self.mass = mass
 
         self.orbit = []
+        self.orbit_spline = None
         self.sun = False
         self.distance_to_sun = 0
 
         self.x_vel = 0
         self.y_vel = 0
 
-    def draw(self, win):
+    def draw(self, win, orbit_surface):
         x = int(self.x * self.SCALE + WIDTH / 2)
         y = int(self.y * self.SCALE + HEIGHT / 2)
 
         if len(self.orbit) > 3:  # Ensure we have more than 3 points for splprep
-            # Prepare points for the spline
-            points = np.array(self.orbit)
-            points[:, 0] = points[:, 0] * self.SCALE + WIDTH / 2
-            points[:, 1] = points[:, 1] * self.SCALE + HEIGHT / 2
+            if not self.orbit_spline or len(self.orbit) > len(self.orbit_spline[0]):
+                # Recompute the spline if new points were added
+                points = np.array(self.orbit)
+                points[:, 0] = points[:, 0] * self.SCALE + WIDTH / 2
+                points[:, 1] = points[:, 1] * self.SCALE + HEIGHT / 2
 
-            # Compute the spline representation of the points
-            tck, u = splprep(points.T, s=0, k=3)
-            unew = np.linspace(0, 1, num=1000, endpoint=True)  # More points for smoother line
-            out = splev(unew, tck)
+                tck, u = splprep(points.T, s=0, k=3)
+                unew = np.linspace(0, 1, num=min(1000, len(self.orbit) * 10), endpoint=True)  # Adjusted for performance
+                self.orbit_spline = splev(unew, tck)
 
-            # Convert spline points to integer and create updated points list
-            updated_points = [(int(out[0][i]), int(out[1][i])) for i in range(len(out[0]))]
-
-            pygame.draw.aalines(win, self.color, False, updated_points)
+            updated_points = [(int(self.orbit_spline[0][i]), int(self.orbit_spline[1][i])) for i in range(len(self.orbit_spline[0]))]
+            pygame.draw.aalines(orbit_surface, self.color, False, updated_points)
 
         pygame.gfxdraw.aacircle(win, x, y, self.radius, self.color)
         pygame.gfxdraw.filled_circle(win, x, y, self.radius, self.color)
@@ -95,7 +94,10 @@ class Planet:
 
         self.x += self.x_vel * self.TIMESTEP
         self.y += self.y_vel * self.TIMESTEP
-        self.orbit.append((self.x, self.y))
+
+        # Optimize by only adding unique points
+        if len(self.orbit) == 0 or (self.x, self.y) != self.orbit[-1]:
+            self.orbit.append((self.x, self.y))
 
 
 def main():
@@ -119,9 +121,14 @@ def main():
 
     planets = [sun, earth, mars, mercury, venus]
 
+    # Create a surface for drawing orbits
+    orbit_surface = pygame.Surface((WIDTH, HEIGHT))
+    orbit_surface.set_colorkey((0, 0, 0))  # Make the background transparent
+
     while run:
-        clock.tick(60)
+        clock.tick(30)
         WIN.fill((0, 0, 0))
+        orbit_surface.fill((0, 0, 0))  # Clear the orbit surface
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -129,8 +136,9 @@ def main():
 
         for planet in planets:
             planet.update_position(planets)
-            planet.draw(WIN)
+            planet.draw(WIN, orbit_surface)
 
+        WIN.blit(orbit_surface, (0, 0))  # Draw the orbit surface onto the main window
         pygame.display.update()
 
     pygame.quit()

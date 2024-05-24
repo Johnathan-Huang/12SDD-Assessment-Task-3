@@ -93,7 +93,6 @@ def sim_loop():
                 WIDTH, HEIGHT = event.w, event.h
                 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
-
 def play_game():
     global screen, WIDTH, HEIGHT # Declare global variables
     pygame.mixer.music.load("sounds/alexander-nakarada-space-ambience.mp3")

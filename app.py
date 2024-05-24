@@ -26,9 +26,6 @@ WHITE = (255, 255, 255)
 GREEN = (0, 100, 0)
 RED = (100, 0, 0)
 BLUE = (0, 0, 100)
-ARROW_BUTTON_COLOUR = (100, 100, 100)
-GRID_SIZE = 15
-human_player = True
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Sol Simulation")
@@ -77,6 +74,26 @@ def check_button_click(pos):
     button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 50, 200, 100)
     return button_rect.collidepoint(pos)
 
+def sim_loop():
+    global screen, WIDTH, HEIGHT
+    player_turn_font = pygame.font.Font("Abel.ttf", 40)
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("sounds/maxkomusic-space-technologies.mp3")
+    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.play(-1)
+    
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.VIDEORESIZE:
+                WIDTH, HEIGHT = event.w, event.h
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+
+
 def play_game():
     global screen, WIDTH, HEIGHT # Declare global variables
     pygame.mixer.music.load("sounds/alexander-nakarada-space-ambience.mp3")
@@ -93,6 +110,11 @@ def play_game():
             if event.type == pygame.VIDEORESIZE:
                 WIDTH, HEIGHT = event.w, event.h
                 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+
+            if title_screen and event.type == pygame.MOUSEBUTTONDOWN:
+                if check_button_click(event.pos):
+                    title_screen = False
+                    sim_loop()
 
         if title_screen:
             display_title_screen()

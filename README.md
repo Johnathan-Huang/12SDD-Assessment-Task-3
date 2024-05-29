@@ -2,13 +2,13 @@
 
 Solar System Simulation Program Repository Link:
 
-Description: The purpose of this software project is to create a simple game similar in mechanics to connect 4 using Python and Pygame in both an ASCII-based and GUI-based format. This project is small scale, as it is a simple game being developed by 1 developer, and a few testers. To win the game, a person must connect 5 boxes in a row, column or diagonal. There are board size settings, AI, and multiplayer.
+Description: The purpose of this software project is to create a solar system simulation program that depicts the normal or customised movement of major solar system objects in a GUI-based format. This project is small-medium scale, as it is a somewhat complex game being developed by 1 developer. This program may suffer from performance issues after significant runtime. There are customisable values, settings, and save files implemented.
 
 Instructions: To install the project and its dependencies, including prerequisites, install the following languages and extensions:
 
-Python, Pygame
+Python, Pygame, TBA
 
-Usage: 
+Usage: TBA
 
 Authors: Johnathan Huang
 

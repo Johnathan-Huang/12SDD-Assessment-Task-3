@@ -15,6 +15,7 @@ from astroquery.jplhorizons import Horizons
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QPushButton, QFileDialog
 import math
+import pygame.gfxdraw
 
 pygame.init()
 pygame.font.init()

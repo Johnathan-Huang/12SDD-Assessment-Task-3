@@ -32,6 +32,43 @@ BLUE = (0, 0, 100)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Sol Simulation")
 
+def main():
+	run = True
+	clock = pygame.time.Clock()
+
+	sun = Planet(0, 0, 30, WHITE, 1.98892 * 10**30)
+	sun.sun = True
+
+	earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
+	earth.y_vel = 29.783 * 1000 
+
+	mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
+	mars.y_vel = 24.077 * 1000
+
+	mercury = Planet(0.387 * Planet.AU, 0, 8, BACKGROUND_COLOUR, 3.30 * 10**23)
+	mercury.y_vel = -47.4 * 1000
+
+	venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10**24)
+	venus.y_vel = -35.02 * 1000
+
+	planets = [sun, earth, mars, mercury, venus]
+
+	while run:
+		clock.tick(60)
+		screen.fill((0, 0, 0))
+
+		for event in pygame.event.get():
+			if event.type == pygame. QUIT:
+				run = False
+
+		for planet in planets:
+			planet.update_position(planets)
+			planet.draw(screen)
+
+		pygame.display.update()
+
+	pygame.quit()
+
 def display_title_screen():
     title_font = pygame.font.Font("Abel.ttf", 150)
     button_font = pygame.font.Font("Abel.ttf", 50)
@@ -76,6 +113,10 @@ def check_button_click(pos):
     button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 50, 200, 100)
     return button_rect.collidepoint(pos)
 
+def check_save_file_click(pos):
+	Save_File_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 150, 345, 100)
+	return Save_File_button_rect.collidepoint(pos)
+
 def sim_loop():
     global screen, WIDTH, HEIGHT
     player_turn_font = pygame.font.Font("Abel.ttf", 40)
@@ -94,45 +135,13 @@ def sim_loop():
             if event.type == pygame.VIDEORESIZE:
                 WIDTH, HEIGHT = event.w, event.h
                 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-    
-    main()
-
-def main():
-	run = True
-	clock = pygame.time.Clock()
-
-	sun = Planet(0, 0, 30, WHITE, 1.98892 * 10**30)
-	sun.sun = True
-
-	earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
-	earth.y_vel = 29.783 * 1000 
-
-	mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
-	mars.y_vel = 24.077 * 1000
-
-	mercury = Planet(0.387 * Planet.AU, 0, 8, BACKGROUND_COLOUR, 3.30 * 10**23)
-	mercury.y_vel = -47.4 * 1000
-
-	venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10**24)
-	venus.y_vel = -35.02 * 1000
-
-	planets = [sun, earth, mars, mercury, venus]
-
-	while run:
-		clock.tick(60)
-		screen.fill((0, 0, 0))
-
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				run = False
-
-		for planet in planets:
-			planet.update_position(planets)
-			planet.draw(screen)
-
-		pygame.display.update()
-
-	pygame.quit()
+				
+		
+        screen.fill(BACKGROUND_COLOUR_2)
+        pygame.display.flip()
+        		
+def save_screen():
+	pass
 	
 distance_font = pygame.font.Font("Abel.ttf", 50)
 class Planet:
@@ -229,6 +238,9 @@ def play_game():
                 if check_button_click(event.pos):
                     title_screen = False
                     sim_loop()
+                elif check_save_file_click(event.pos):
+                    title_screen = False
+                    save_screen()
 
         if title_screen:
             display_title_screen()

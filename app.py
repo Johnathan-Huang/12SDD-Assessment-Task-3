@@ -135,7 +135,6 @@ def sim_loop():
             if event.type == pygame.VIDEORESIZE:
                 WIDTH, HEIGHT = event.w, event.h
                 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-				
 		
         screen.fill(BACKGROUND_COLOUR_2)
         pygame.display.flip()

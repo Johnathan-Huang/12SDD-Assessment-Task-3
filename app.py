@@ -32,9 +32,10 @@ YELLOW = (255, 255, 0)
 GREY = (100, 100, 100)
 BROWN = (139, 69, 19)
 
+icon_image = pygame.image.load("images/literallysun2.png")
+pygame.display.set_icon(icon_image)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Sol Simulation")
-pygame.display.set_icon(pygame.image.load("images/literallysun.png"))
 
 def main():
 	run = True

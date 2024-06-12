@@ -32,10 +32,12 @@ YELLOW = (255, 255, 0)
 GREY = (100, 100, 100)
 BROWN = (139, 69, 19)
 
+icon_image = pygame.image.load("images/literallysun2.png")
+pygame.display.set_icon(icon_image)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Sol Simulation")
 
-distance_font = pygame.font.Font(None, 25)
+distance_font = pygame.font.Font("Abel.ttf", 25)
 
 class Planet:
     AU = 149.6e6 * 1000
@@ -112,8 +114,8 @@ class Planet:
 
 
 def display_title_screen():
-    title_font = pygame.font.Font(None, 150)
-    button_font = pygame.font.Font(None, 50)
+    title_font = pygame.font.Font("Abel.ttf", 150)
+    button_font = pygame.font.Font("Abel.ttf", 50)
     title_text = title_font.render("Sol Simulation", True, WHITE)
     start_button_text = button_font.render("New Simulation", True, WHITE)
 

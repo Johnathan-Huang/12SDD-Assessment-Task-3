@@ -1,19 +1,5 @@
 import pygame
 import sys
-import os
-import turtle
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import scipy
-import spacepy
-import poliastro
-import astropy
-import numpy as np
-import pandas
-from astropy.time import Time
-from astroquery.jplhorizons import Horizons
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QGridLayout, QWidget, QPushButton, QFileDialog
 import math
 import pygame.gfxdraw
 
@@ -112,7 +98,6 @@ class Planet:
         self.y += self.y_vel * self.TIMESTEP
         self.orbit.append((self.x, self.y))
 
-
 def display_title_screen():
     title_font = pygame.font.Font("Abel.ttf", 150)
     button_font = pygame.font.Font("Abel.ttf", 50)
@@ -158,16 +143,24 @@ def display_title_screen():
 
     pygame.display.flip()
 
-
 def check_button_click(pos):
     button_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 - 50, 400, 100)
     return button_rect.collidepoint(pos)
-
 
 def check_save_file_click(pos):
     Save_File_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 150, 345, 100)
     return Save_File_button_rect.collidepoint(pos)
 
+def check_info_click(pos):
+    info_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 300, 345, 100)
+    return info_button_rect.collidepoint(pos)
+
+def infoscreen():
+    info_font = pygame.font.Font("Abel.ttf", 50)
+    info_title = info_font.render("Info", True, WHITE)
+    screen.blit(info_title, (WIDTH // 2 - info_title.get_width() // 2, 50))
+    # Additional info screen content can be added here
+    pygame.display.flip()
 
 def sim_loop():
     global screen, WIDTH, HEIGHT
@@ -194,6 +187,7 @@ def sim_loop():
     planets = [sun, earth, mars, mercury, venus]
 
     clock = pygame.time.Clock()
+    show_info_screen = False  # Flag to indicate if the info screen should be displayed
 
     while True:
         for event in pygame.event.get():
@@ -205,20 +199,30 @@ def sim_loop():
                 WIDTH, HEIGHT = event.w, event.h
                 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
-        screen.fill(BACKGROUND_COLOUR)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if check_info_click(event.pos):
+                    show_info_screen = not show_info_screen
 
-        for planet in planets:
-            planet.update_position(planets)
-            planet.draw(screen)
+        if show_info_screen:
+            infoscreen()
+        else:
+            screen.fill(BACKGROUND_COLOUR)
+            
+            for planet in planets:
+                planet.update_position(planets)
+                planet.draw(screen)
+
+            # Draw info button
+            info_button_colour = GREY
+            info_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 300, 345, 100)
+            pygame.draw.rect(screen, info_button_colour, info_button_rect, border_radius=10)
 
         pygame.display.flip()
         clock.tick(60)  # Limit frame rate to 60 FPS
 
-
 def save_screen():
-    screen.fill(GREY)
-    pygame.display.flip()
-
+    pass
+    
 def play_game():
     global screen, WIDTH, HEIGHT
     pygame.mixer.music.load("sounds/alexander-nakarada-space-ambience.mp3")
@@ -247,7 +251,5 @@ def play_game():
         if title_screen:
             display_title_screen()
 
-def infoscreen():
-    pass
 # Start the game
 play_game()

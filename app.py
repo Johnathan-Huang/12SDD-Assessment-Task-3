@@ -16,6 +16,7 @@ RED = (100, 0, 0)
 BLUE = (0, 0, 100)
 YELLOW = (255, 255, 0)
 GREY = (100, 100, 100)
+GREYHOVER = (80, 80, 80)
 BROWN = (139, 69, 19)
 
 icon_image = pygame.image.load("images/literallysun2.png")
@@ -213,8 +214,12 @@ def sim_loop():
                 planet.draw(screen)
 
             # Draw info button
-            info_button_colour = GREY
+            mouse_pos = pygame.mouse.get_pos()
             info_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 300, 345, 100)
+            if info_button_rect.collidepoint(mouse_pos):
+                info_button_colour = GREYHOVER
+            else:
+                info_button_colour = GREY
             pygame.draw.rect(screen, info_button_colour, info_button_rect, border_radius=10)
 
         pygame.display.flip()

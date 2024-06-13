@@ -216,7 +216,8 @@ def sim_loop():
 
 
 def save_screen():
-    pass
+    screen.fill(GREY)
+    pygame.display.flip()
 
 def play_game():
     global screen, WIDTH, HEIGHT
@@ -246,6 +247,7 @@ def play_game():
         if title_screen:
             display_title_screen()
 
-
+def infoscreen():
+    pass
 # Start the game
 play_game()

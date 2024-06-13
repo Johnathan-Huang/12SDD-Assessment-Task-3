@@ -153,7 +153,7 @@ def check_save_file_click(pos):
     return Save_File_button_rect.collidepoint(pos)
 
 def check_info_click(pos):
-    info_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 300, 345, 100)
+    info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50 , 100, 100)
     return info_button_rect.collidepoint(pos)
 
 def infoscreen():
@@ -215,7 +215,7 @@ def sim_loop():
 
             # Draw info button
             mouse_pos = pygame.mouse.get_pos()
-            info_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 300, 345, 100)
+            info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50, 100, 100)
             if info_button_rect.collidepoint(mouse_pos):
                 info_button_colour = GREYHOVER
             else:

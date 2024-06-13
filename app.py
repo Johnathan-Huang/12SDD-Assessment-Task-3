@@ -52,13 +52,13 @@ class Planet:
 
         if len(self.orbit) > 2:
             updated_points = []
-            for point in self.orbit[-50:]:  # Limit to last 50 points for performance
+            for point in self.orbit[-80:]:  # Limit to last 80 points for performance
                 x, y = point
                 x = int(x * self.SCALE + WIDTH / 2)
                 y = int(y * self.SCALE + HEIGHT / 2)
                 updated_points.append((x, y))
 
-            pygame.draw.aalines(win, self.color, False, updated_points, 1)
+            pygame.draw.lines(win, self.color, False, updated_points, 2)
 
         pygame.gfxdraw.aacircle(win, x, y, self.radius, self.color)
         pygame.gfxdraw.filled_circle(win, x, y, self.radius, self.color)

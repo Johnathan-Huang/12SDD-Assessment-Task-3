@@ -28,8 +28,8 @@ distance_font = pygame.font.Font("Abel.ttf", 25)
 
 class Planet:
     AU = 149.6e6 * 1000
-    G = 6.67428e-11
-    SCALE = 250 / AU  # 1AU = 100 pixels
+    G = 16.67428e-11
+    SCALE = 1 / AU  # 1AU = 100 pixels
     TIMESTEP = 3600 * 24  # 1 day
 
     def __init__(self, x, y, radius, color, mass):
@@ -52,7 +52,7 @@ class Planet:
 
         if len(self.orbit) > 2:
             updated_points = []
-            for point in self.orbit[-80:]:  # Limit to last 80 points for performance
+            for point in self.orbit[-16:]:  # Limit to last 80 points for performance
                 x, y = point
                 x = int(x * self.SCALE + WIDTH / 2)
                 y = int(y * self.SCALE + HEIGHT / 2)
@@ -64,7 +64,7 @@ class Planet:
         pygame.gfxdraw.filled_circle(win, x, y, self.radius, self.color)
 
         if not self.sun:
-            distance_text = distance_font.render(f"{round(self.distance_to_sun / 1000, 1)}km", 1, WHITE)
+            distance_text = distance_font.render(f"{round(self.distance_to_sun / 150000000000, 2)}AU", 1, WHITE)
             win.blit(distance_text, (x - distance_text.get_width() / 2, y - distance_text.get_height() / 2))
 
     def attraction(self, other):
@@ -185,7 +185,22 @@ def sim_loop():
     venus = Planet(0.723 * Planet.AU, 0, 14, BROWN, 4.8685 * 10**24)
     venus.y_vel = -35.02 * 1000
 
-    planets = [sun, earth, mars, mercury, venus]
+    jupiter = Planet(5.203 * Planet.AU, 0, 20, (255, 165, 0), 1.898 * 10**27)
+    jupiter.y_vel = -13.07 * 1000
+
+    saturn = Planet(9.582 * Planet.AU, 0, 18, (255, 215, 0), 5.683 * 10**26)
+    saturn.y_vel = -9.69 * 1000
+
+    uranus = Planet(19.22 * Planet.AU, 0, 16, (0, 191, 255), 8.681 * 10**25)
+    uranus.y_vel = -6.81 * 1000
+
+    neptune = Planet(30.05 * Planet.AU, 0, 16, (0, 0, 139), 1.024 * 10**26)
+    neptune.y_vel = -5.43 * 1000
+
+    pluto = Planet(39.48 * Planet.AU, 0, 8, (255, 255, 255), 1.309 * 10**22)
+    pluto.y_vel = -4.74 * 1000
+
+    planets = [sun, earth, mars, mercury, venus, jupiter, saturn, uranus, neptune, pluto]
 
     clock = pygame.time.Clock()
     show_info_screen = False  # Flag to indicate if the info screen should be displayed
@@ -223,7 +238,7 @@ def sim_loop():
             pygame.draw.rect(screen, info_button_colour, info_button_rect, border_radius=10)
 
         pygame.display.flip()
-        clock.tick(60)  # Limit frame rate to 60 FPS
+        clock.tick(30000)  # Limit frame rate to 60 FPS
 
 def save_screen():
     pass

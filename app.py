@@ -29,7 +29,7 @@ distance_font = pygame.font.Font("Abel.ttf", 25)
 class Planet:
     AU = 149.6e6 * 1000
     G = 16.67428e-11
-    SCALE = 1 / AU  # 1AU = 100 pixels
+    SCALE = 250 / AU  # 1AU = 100 pixels
     TIMESTEP = 3600 * 24  # 1 day
 
     def __init__(self, x, y, radius, color, mass):
@@ -161,6 +161,13 @@ def infoscreen():
     info_title = info_font.render("Info", True, WHITE)
     screen.blit(info_title, (WIDTH // 2 - info_title.get_width() // 2, 50))
     # Additional info screen content can be added here
+    mouse_pos = pygame.mouse.get_pos()
+    info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50, 100, 100)
+    if info_button_rect.collidepoint(mouse_pos):
+        info_button_colour = GREYHOVER
+    else:
+        info_button_colour = GREY
+    pygame.draw.rect(screen, info_button_colour, info_button_rect, border_radius=10)
     pygame.display.flip()
 
 def sim_loop():
@@ -238,7 +245,7 @@ def sim_loop():
             pygame.draw.rect(screen, info_button_colour, info_button_rect, border_radius=10)
 
         pygame.display.flip()
-        clock.tick(30000)  # Limit frame rate to 60 FPS
+        clock.tick(60)  # Limit frame rate to 60 FPS
 
 def save_screen():
     pass

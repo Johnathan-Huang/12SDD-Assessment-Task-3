@@ -102,6 +102,28 @@ class Planet:
         self.y += self.y_vel * self.TIMESTEP
         self.orbit.append((self.x, self.y))
 
+class Moon(Planet):
+    def __init__(self, x, y, radius, color, mass, parent):
+        super().__init__(x, y, radius, color, mass)
+        self.parent = parent
+
+    def update_position(self, planets):
+        total_fx = total_fy = 0
+        for planet in planets:
+            if self == planet or self.parent == planet:
+                continue
+
+            fx, fy = self.attraction(planet)
+            total_fx += fx
+            total_fy += fy
+
+        self.x_vel += total_fx / self.mass * self.TIMESTEP
+        self.y_vel += total_fy / self.mass * self.TIMESTEP
+
+        self.x += self.x_vel * self.TIMESTEP
+        self.y += self.y_vel * self.TIMESTEP
+        self.orbit.append((self.x, self.y))
+        
 def display_title_screen():
     title_font = pygame.font.Font("Abel.ttf", 150)
     button_font = pygame.font.Font("Abel.ttf", 50)
@@ -158,6 +180,10 @@ def check_save_file_click(pos):
 def check_info_click(pos):
     info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50 , 100, 100)
     return info_button_rect.collidepoint(pos)
+
+def check_save_file_1_click(pos):
+    save_file1_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 - 50, 400, 100)
+    return save_file1_rect.collidepoint(pos)
 
 def infoscreen():
     info_font = pygame.font.Font("Abel.ttf", 50)
@@ -289,21 +315,13 @@ def display_save_screen():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
-            if event.type == pygame.VIDEORESIZE:
-                WIDTH, HEIGHT = event.w, event.h
-                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
             if save_file1 and event.type == pygame.MOUSEBUTTONDOWN:
-                if check_button_click(event.pos):
-                    title_screen = False
+                if check_save_file_1_click(event.pos):
+                    save_file1 = True
                     sim_loop()
-                elif check_save_file_click(event.pos):
-                    title_screen = False
+                else:
                     display_save_screen()
-
-        if title_screen:
-            display_title_screen()
     
 def play_game():
     global screen, WIDTH, HEIGHT

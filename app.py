@@ -31,7 +31,7 @@ distance_font = pygame.font.Font("Abel.ttf", 25)
 
 class Planet:
     AU = 149.6e6 * 1000
-    G = 16.67428e-11
+    G = 6.67428e-11
     SCALE = 250 / AU  # 1AU = 100 pixels
     TIMESTEP = 3600 * 24  # 1 day
 
@@ -102,28 +102,88 @@ class Planet:
         self.y += self.y_vel * self.TIMESTEP
         self.orbit.append((self.x, self.y))
 
-class Moon(Planet):
-    def __init__(self, x, y, radius, color, mass, parent):
-        super().__init__(x, y, radius, color, mass)
-        self.parent = parent
+class Moon:
+    G = 6.67428e-11
+    SCALE = 250 / Planet.AU  # Adjusted scale for moons
+    TIMESTEP = 3600 * 24  # 1 day
+
+    def __init__(self, x_rel_to_planet, y_rel_to_planet, radius, color, mass, orbiting_planet, distance_to_planet):
+        self.x = x_rel_to_planet
+        self.y = y_rel_to_planet
+        self.radius = radius
+        self.color = color
+        self.mass = mass
+
+        self.orbit = []
+        self.orbiting_planet = orbiting_planet
+        self.distance_to_planet = distance_to_planet
+
+        self.x_vel = 0
+        self.y_vel = 0
+
+    def draw(self, win):
+        # Calculate the position of the moon relative to its orbiting planet
+        planet_x = self.orbiting_planet.x
+        planet_y = self.orbiting_planet.y
+
+        moon_x = planet_x + self.x
+        moon_y = planet_y + self.y
+
+        # Scale positions for display
+        x_display = int(moon_x * self.SCALE + WIDTH / 2)
+        y_display = int(moon_y * self.SCALE + HEIGHT / 2)
+
+        # Draw moon
+        pygame.gfxdraw.aacircle(win, x_display, y_display, self.radius, self.color)
+        pygame.gfxdraw.filled_circle(win, x_display, y_display, self.radius, self.color)
+
+        # Draw orbit path (if any points are recorded)
+        if len(self.orbit) > 1:
+            updated_points = []
+            for point in self.orbit[-16:]:  # Limit to last 16 points for performance
+                x, y = point
+                x_display = int((planet_x + x) * self.SCALE + WIDTH / 2)
+                y_display = int((planet_y + y) * self.SCALE + HEIGHT / 2)
+                updated_points.append((x_display, y_display))
+
+            pygame.draw.lines(win, self.color, False, updated_points, 2)
+
+        # Optional: Display distance from orbiting planet
+        distance_text = distance_font.render(f"{round(self.distance_to_planet / 150000000000, 2)}AU", 1, WHITE)
+        win.blit(distance_text, (x_display - distance_text.get_width() / 2, y_display - distance_text.get_height() / 2))
 
     def update_position(self, planets):
         total_fx = total_fy = 0
         for planet in planets:
-            if self == planet or self.parent == planet:
-                continue
+            if planet == self.orbiting_planet:
+                # Calculate gravitational force from the planet
+                fx, fy = self.attraction(planet)
+                total_fx += fx
+                total_fy += fy
 
-            fx, fy = self.attraction(planet)
-            total_fx += fx
-            total_fy += fy
-
+        # Update velocity based on total gravitational force
         self.x_vel += total_fx / self.mass * self.TIMESTEP
         self.y_vel += total_fy / self.mass * self.TIMESTEP
 
+        # Update position based on velocity
         self.x += self.x_vel * self.TIMESTEP
         self.y += self.y_vel * self.TIMESTEP
+
+        # Store orbit path for drawing
         self.orbit.append((self.x, self.y))
-        
+
+    def attraction(self, other):
+        other_x, other_y = other.x, other.y
+        distance_x = other_x - self.x
+        distance_y = other_y - self.y
+        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+        force = self.G * self.mass * other.mass / distance ** 2
+        theta = math.atan2(distance_y, distance_x)
+        force_x = math.cos(theta) * force
+        force_y = math.sin(theta) * force
+        return force_x, force_y
+
 def display_title_screen():
     title_font = pygame.font.Font("Abel.ttf", 150)
     button_font = pygame.font.Font("Abel.ttf", 50)
@@ -244,7 +304,11 @@ def sim_loop():
     pluto = Planet(39.48 * Planet.AU, 0, 8, WHITE, 1.309 * 10**22)
     pluto.y_vel = -4.74 * 1000
 
+    moon_earth = Moon(-1 * Planet.AU - 384400000, 0, 5, GREY, 7.342 * 10**22, earth, 384400000)
+    moon_mars = Moon(-1.524 * Planet.AU - 93760000, 0, 3, GREY, 0.64171 * 10**22, mars, 93760000)
+
     planets = [sun, earth, mars, mercury, venus, jupiter, saturn, uranus, neptune, pluto]
+    moons = [moon_earth, moon_mars]
 
     clock = pygame.time.Clock()
     show_info_screen = False  # Flag to indicate if the info screen should be displayed
@@ -271,6 +335,10 @@ def sim_loop():
             for planet in planets:
                 planet.update_position(planets)
                 planet.draw(screen)
+
+            for moon in moons:
+                moon.update_position(planets)
+                moon.draw(screen)
 
             # Draw info button
             mouse_pos = pygame.mouse.get_pos()

@@ -18,6 +18,9 @@ YELLOW = (255, 255, 0)
 GREY = (100, 100, 100)
 GREYHOVER = (80, 80, 80)
 BROWN = (139, 69, 19)
+LIGHTBLUE = (0, 191, 255)
+DARKYELLOW = (255, 215, 0)
+ORANGE = (255, 165, 0)
 
 icon_image = pygame.image.load("images/literallysun2.png")
 pygame.display.set_icon(icon_image)
@@ -192,19 +195,19 @@ def sim_loop():
     venus = Planet(0.723 * Planet.AU, 0, 14, BROWN, 4.8685 * 10**24)
     venus.y_vel = -35.02 * 1000
 
-    jupiter = Planet(5.203 * Planet.AU, 0, 20, (255, 165, 0), 1.898 * 10**27)
+    jupiter = Planet(5.203 * Planet.AU, 0, 20, ORANGE, 1.898 * 10**27)
     jupiter.y_vel = -13.07 * 1000
 
-    saturn = Planet(9.582 * Planet.AU, 0, 18, (255, 215, 0), 5.683 * 10**26)
+    saturn = Planet(9.582 * Planet.AU, 0, 18, DARKYELLOW, 5.683 * 10**26)
     saturn.y_vel = -9.69 * 1000
 
-    uranus = Planet(19.22 * Planet.AU, 0, 16, (0, 191, 255), 8.681 * 10**25)
+    uranus = Planet(19.22 * Planet.AU, 0, 16, LIGHTBLUE, 8.681 * 10**25)
     uranus.y_vel = -6.81 * 1000
 
-    neptune = Planet(30.05 * Planet.AU, 0, 16, (0, 0, 139), 1.024 * 10**26)
+    neptune = Planet(30.05 * Planet.AU, 0, 16, BLUE, 1.024 * 10**26)
     neptune.y_vel = -5.43 * 1000
 
-    pluto = Planet(39.48 * Planet.AU, 0, 8, (255, 255, 255), 1.309 * 10**22)
+    pluto = Planet(39.48 * Planet.AU, 0, 8, WHITE, 1.309 * 10**22)
     pluto.y_vel = -4.74 * 1000
 
     planets = [sun, earth, mars, mercury, venus, jupiter, saturn, uranus, neptune, pluto]
@@ -247,8 +250,60 @@ def sim_loop():
         pygame.display.flip()
         clock.tick(60)  # Limit frame rate to 60 FPS
 
-def save_screen():
-    pass
+def display_save_screen():
+    title_font = pygame.font.Font("Abel.ttf", 150)
+    button_font = pygame.font.Font("Abel.ttf", 50)
+    title_text = title_font.render("Save Files", True, WHITE)
+    save_file1_text = button_font.render("Save File 1", True, WHITE)
+
+    button_width = 400
+    button_height = 100
+    button_y = HEIGHT // 2 - button_height // 2
+    button_x = (WIDTH - button_width) // 2
+
+    screen.fill(BACKGROUND_COLOUR)
+
+    title_x = WIDTH // 2 - title_text.get_width() // 2
+    screen.blit(title_text, (title_x, 50))
+
+    save_file1_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+    mouse_pos = pygame.mouse.get_pos()
+    if save_file1_rect.collidepoint(mouse_pos):
+        save_file1_colour = GREYHOVER
+    else:
+        save_file1_colour = GREY
+
+    pygame.draw.rect(screen, save_file1_colour, save_file1_rect, border_radius=10)
+    start_button_text_x = save_file1_rect.centerx - save_file1_text.get_width() // 2
+    start_button_text_y = save_file1_rect.centery - save_file1_text.get_height() // 2
+    screen.blit(save_file1_text, (start_button_text_x, start_button_text_y))
+
+    pygame.display.flip()
+
+    save_file1 = False
+    save_file2 = False
+    save_file3 = False
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            
+            if event.type == pygame.VIDEORESIZE:
+                WIDTH, HEIGHT = event.w, event.h
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+
+            if save_file1 and event.type == pygame.MOUSEBUTTONDOWN:
+                if check_button_click(event.pos):
+                    title_screen = False
+                    sim_loop()
+                elif check_save_file_click(event.pos):
+                    title_screen = False
+                    display_save_screen()
+
+        if title_screen:
+            display_title_screen()
     
 def play_game():
     global screen, WIDTH, HEIGHT
@@ -273,7 +328,7 @@ def play_game():
                     sim_loop()
                 elif check_save_file_click(event.pos):
                     title_screen = False
-                    save_screen()
+                    display_save_screen()
 
         if title_screen:
             display_title_screen()

@@ -177,6 +177,14 @@ def check_save_file_click(pos):
     Save_File_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 150, 345, 100)
     return Save_File_button_rect.collidepoint(pos)
 
+def check_save_file_2_click(pos):
+    save_file2_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 + 150, 400, 100)
+    return save_file2_rect.collidepoint(pos)
+
+def check_save_file_3_click(pos):
+    save_file3_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 + 300, 400, 100)
+    return save_file3_rect.collidepoint(pos)
+
 def check_info_click(pos):
     info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50 , 100, 100)
     return info_button_rect.collidepoint(pos)
@@ -304,11 +312,31 @@ def display_save_screen():
     start_button_text_y = save_file1_rect.centery - save_file1_text.get_height() // 2
     screen.blit(save_file1_text, (start_button_text_x, start_button_text_y))
 
-    pygame.display.flip()
+    save_file2_rect = pygame.Rect(button_x, button_y + 150, button_width, button_height)
+    if save_file2_rect.collidepoint(mouse_pos):
+        save_file2_colour = GREYHOVER
+    else:
+        save_file2_colour = GREY
 
-    save_file1 = False
-    save_file2 = False
-    save_file3 = False
+    pygame.draw.rect(screen, save_file2_colour, save_file2_rect, border_radius=10)
+    save_file2_text = button_font.render("Save File 2", True, WHITE)
+    save_file2_text_x = save_file2_rect.centerx - save_file2_text.get_width() // 2
+    save_file2_text_y = save_file2_rect.centery - save_file2_text.get_height() // 2
+    screen.blit(save_file2_text, (save_file2_text_x, save_file2_text_y))
+
+    save_file3_rect = pygame.Rect(button_x, button_y + 300, button_width, button_height)
+    if save_file3_rect.collidepoint(mouse_pos):
+        save_file3_colour = GREYHOVER
+    else:
+        save_file3_colour = GREY
+        
+    pygame.draw.rect(screen, save_file3_colour, save_file3_rect, border_radius=10)
+    save_file3_text = button_font.render("Save File 3", True, WHITE)
+    save_file3_text_x = save_file3_rect.centerx - save_file3_text.get_width() // 2
+    save_file3_text_y = save_file3_rect.centery - save_file3_text.get_height() // 2
+    screen.blit(save_file3_text, (save_file3_text_x, save_file3_text_y))
+
+    pygame.display.flip()
 
     while True:
         for event in pygame.event.get():
@@ -316,12 +344,13 @@ def display_save_screen():
                 pygame.quit()
                 sys.exit()
 
-            if save_file1 and event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if check_save_file_1_click(event.pos):
-                    save_file1 = True
                     sim_loop()
-                else:
-                    display_save_screen()
+                elif check_save_file_2_click(event.pos):
+                    sim_loop()
+                elif check_save_file_3_click(event.pos):
+                    sim_loop()
     
 def play_game():
     global screen, WIDTH, HEIGHT
@@ -329,6 +358,7 @@ def play_game():
     pygame.mixer.music.set_volume(0.05)
     pygame.mixer.music.play(-1)
     title_screen = True
+    save_screen = False
 
     while True:
         for event in pygame.event.get():
@@ -346,6 +376,7 @@ def play_game():
                     sim_loop()
                 elif check_save_file_click(event.pos):
                     title_screen = False
+                    save_screen = True
                     display_save_screen()
 
         if title_screen:

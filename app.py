@@ -7,7 +7,7 @@ pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
-WIDTH, HEIGHT = 900, 800
+WIDTH, HEIGHT = 1500, 900
 BACKGROUND_COLOUR = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 100, 0)
@@ -31,7 +31,7 @@ distance_font = pygame.font.Font("Abel.ttf", 25)
 
 class Planet:
     AU = 149.6e6 * 1000
-    G = 16.67428e-11
+    G = 6.67428e-11
     SCALE = 10 / AU  # 1AU = 100 pixels
     TIMESTEP = 3600 * 24  # 1 day
 
@@ -172,15 +172,52 @@ def check_save_file_1_click(pos):
     save_file1_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 - 50, 400, 100)
     return save_file1_rect.collidepoint(pos)
 
+class InputBox:
+    def __init__(self, x, y, w, h, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = WHITE
+        self.text = text
+        self.font = pygame.font.Font(None, 32)
+        self.active = False  # Track if the input box is active (clicked on)
+        self.update_text_surface()
+
+    def update_text_surface(self):
+        rounded_text = f"{float(self.text):.2e}" if self.text else ""
+        self.txt_surface = self.font.render(rounded_text, True, self.color)
+        self.txt_surface_rect = self.txt_surface.get_rect()
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+            self.color = WHITE if self.active else GREY
+
+        if event.type == pygame.KEYDOWN and self.active:
+            if event.key == pygame.K_RETURN:
+                self.active = False
+            elif event.key == pygame.K_BACKSPACE:
+                self.text = self.text[:-1]
+            else:
+                self.text += event.unicode
+            self.update_text_surface()
+
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, self.rect, 2)
+        win.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+
 def infoscreen(planets):
     info_font = pygame.font.Font("Abel.ttf", 50)
     detail_font = pygame.font.Font("Abel.ttf", 25)
     info_title = info_font.render("Info", True, WHITE)
     screen.fill(GREYHOVER)
-    screen.blit(info_title, (WIDTH // 2 - info_title.get_width() // 2, 50))
+    screen.blit(info_title, (WIDTH // 4 - info_title.get_width() // 2, 50))  # Title centered
 
-    # Display constants and scale information
-    start_y = 150
+    # Calculate start positions for columns
+    start_y_left = 150
+    start_y_right = 150
+
     Astronomical_Unit = f"1 AU = 149.6e6 km"
     Gravitational_Constant = f"Gravitational Constant = {Planet.G:.2e} m^3/kg/s^2"
     Scale = f"Scale = {Planet.SCALE:.2e}"
@@ -189,19 +226,41 @@ def infoscreen(planets):
     gc_text = detail_font.render(Gravitational_Constant, True, WHITE)
     scale_text = detail_font.render(Scale, True, WHITE)
 
-    screen.blit(au_text, (WIDTH // 2 - au_text.get_width() // 2, start_y))
-    screen.blit(gc_text, (WIDTH // 2 - gc_text.get_width() // 2, start_y + 25))
-    screen.blit(scale_text, (WIDTH // 2 - scale_text.get_width() // 2, start_y + 50))
+    # Render text in left column
+    screen.blit(au_text, (WIDTH // 4 - au_text.get_width() // 2, start_y_left))
+    screen.blit(gc_text, (WIDTH // 4 - gc_text.get_width() // 2, start_y_left + 25))
+    screen.blit(scale_text, (WIDTH // 4 - scale_text.get_width() // 2, start_y_left + 50))
 
-    # Adjust start_y for planet information
-    start_y += 100
+    input_boxes = []
 
-    # Display planet information
-    for planet in planets:
+    # Render planets in left column with input boxes
+    for i, planet in enumerate(planets[:5]):  # Render first 5 planets in the left column
         planet_info = f"{planet.name}: Mass={planet.mass:.2e}, Distance to Sun={planet.distance_to_sun / 1.496e11:.2f} AU"
         info_text = detail_font.render(planet_info, True, WHITE)
-        screen.blit(info_text, (WIDTH // 2 - info_text.get_width() // 2, start_y))
-        start_y += 50
+        screen.blit(info_text, (WIDTH // 4 - info_text.get_width() // 2, start_y_left + 100 + i * 100))
+
+        mass_box = InputBox(WIDTH // 4 - 200, start_y_left + 100 + i * 100 + 45, 140, 32, text=str(planet.mass))
+        distance_box = InputBox(WIDTH // 4 + 150, start_y_left + 100 + i * 100 + 45, 140, 32, text=str(round(planet.distance_to_sun / 1.496e11, 2)))
+
+        input_boxes.append((mass_box, distance_box))
+
+        mass_box.draw(screen)
+        distance_box.draw(screen)
+
+    # Render planets in right column with input boxes
+    start_y_right = 150
+    for i, planet in enumerate(planets[5:]):  # Render remaining planets in the right column
+        planet_info = f"{planet.name}: Mass={planet.mass:.2e}, Distance to Sun={planet.distance_to_sun / 1.496e11:.2f} AU"
+        info_text = detail_font.render(planet_info, True, WHITE)
+        screen.blit(info_text, (3 * WIDTH // 4 - info_text.get_width() // 2, start_y_right + i * 100))
+
+        mass_box = InputBox(3 * WIDTH // 4 - 200, start_y_right + i * 100 + 45, 140, 32, text=str(planet.mass))
+        distance_box = InputBox(3 * WIDTH // 4 + 150, start_y_right + i * 100 + 45, 140, 32, text=str(round(planet.distance_to_sun / 1.496e11, 2)))
+
+        input_boxes.append((mass_box, distance_box))
+
+        mass_box.draw(screen)
+        distance_box.draw(screen)
 
     mouse_pos = pygame.mouse.get_pos()
     info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50, 100, 100)
@@ -216,6 +275,8 @@ def infoscreen(planets):
     screen.blit(info_button_text, (info_button_text_x, info_button_text_y))
 
     pygame.display.flip()
+
+    return input_boxes
 
 def sim_loop():
     global screen, WIDTH, HEIGHT

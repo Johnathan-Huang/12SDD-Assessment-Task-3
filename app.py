@@ -30,6 +30,25 @@ pygame.display.set_caption("Sol Simulation")
 distance_font = pygame.font.Font("Abel.ttf", 25)
 
 class Planet:
+    #Class representing a planet in the simulation.
+
+    #Attributes:
+       # AU (float): Astronomical Unit in meters.
+        #G (float): Gravitational constant.
+        #SCALE (float): Scale factor for converting AU to pixels.
+        #TIMESTEP (int): Time step for the simulation in seconds.
+        #name (str): Name of the planet.
+        #x (float): X-coordinate of the planet.
+        #y (float): Y-coordinate of the planet.
+        #radius (int): Radius of the planet.
+        #color (tuple): Color of the planet.
+        #mass (float): Mass of the planet.
+        #orbit (list): List of (x, y) tuples representing the planet's orbit.
+        #sun (bool): Whether the planet is the sun.
+        #distance_to_sun (float): Distance from the planet to the sun.
+        #x_vel (float): X-component of the planet's velocity.
+        #y_vel (float): Y-component of the planet's velocity.
+
     AU = 149.6e6 * 1000
     G = 6.67428e-11
     SCALE = 10 / AU  # 1AU = 100 pixels
@@ -51,6 +70,11 @@ class Planet:
         self.y_vel = 0
 
     def draw(self, win):
+    #Draw the planet on the given window.
+
+    #Args:
+    #win (pygame.Surface): The window surface to draw the planet on.
+
         x = int(self.x * self.SCALE + WIDTH / 2)
         y = int(self.y * self.SCALE + HEIGHT / 2)
 
@@ -72,6 +96,14 @@ class Planet:
             win.blit(distance_text, (x - distance_text.get_width() / 2, y - distance_text.get_height() / 2))
 
     def attraction(self, other):
+        #Calculate the gravitational force exerted on this planet by another planet.
+
+        #Args:
+            #other (Planet): The other planet.
+
+        #Returns:
+            #tuple: The x and y components of the gravitational force.
+
         other_x, other_y = other.x, other.y
         distance_x = other_x - self.x
         distance_y = other_y - self.y
@@ -87,6 +119,11 @@ class Planet:
         return force_x, force_y
 
     def update_position(self, planets):
+        #Update the planet's position based on the gravitational forces exerted by other planets.
+
+        #Args:
+            #planets (list): List of all planets in the simulation.
+
         total_fx = total_fy = 0
         for planet in planets:
             if self == planet:
@@ -104,6 +141,7 @@ class Planet:
         self.orbit.append((self.x, self.y))
 
 def display_title_screen():
+    #Display the title screen with options to start a new simulation or save files.
     title_font = pygame.font.Font("Abel.ttf", 150)
     button_font = pygame.font.Font("Abel.ttf", 50)
     title_text = title_font.render("Sol Simulation", True, WHITE)
@@ -149,26 +187,56 @@ def display_title_screen():
     pygame.display.flip()
 
 def check_button_click(pos):
+    #Check if the "New Simulation" button is clicked.
+    #Args:
+        #pos (tuple): The position of the mouse click.
+    #Returns:
+        #bool: True if the "New Simulation" button is clicked, False otherwise.
     button_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 - 50, 400, 100)
     return button_rect.collidepoint(pos)
 
 def check_save_file_click(pos):
+    #Check if the "Save Files" button is clicked.
+    #Args:
+        #pos (tuple): The position of the mouse click.
+    #Returns:
+        #bool: True if the "Save Files" button is clicked, False otherwise.
     Save_File_button_rect = pygame.Rect(WIDTH // 2 - 172, HEIGHT // 2 + 150, 345, 100)
     return Save_File_button_rect.collidepoint(pos)
 
 def check_save_file_2_click(pos):
+    #Check if the "Save File 2" button is clicked.
+    #Args:
+        #pos (tuple): The position of the mouse click.
+    #Returns:
+        #bool: True if the "Save File 2" button is clicked, False otherwise.
     save_file2_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 + 150, 400, 100)
     return save_file2_rect.collidepoint(pos)
 
 def check_save_file_3_click(pos):
+    #Check if the "Save File 3" button is clicked.
+    #Args:
+        #pos (tuple): The position of the mouse click.
+    #Returns:
+        #bool: True if the "Save File 3" button is clicked, False otherwise.
     save_file3_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 + 300, 400, 100)
     return save_file3_rect.collidepoint(pos)
 
 def check_info_click(pos):
+    #Check if the "info" button is clicked.
+    #Args:
+        #pos (tuple): The position of the mouse click.
+    #Returns:
+        #bool: True if the "info" button is clicked, False otherwise.
     info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50 , 100, 100)
     return info_button_rect.collidepoint(pos)
 
 def check_save_file_1_click(pos):
+    #Check if the "Save File 1" button is clicked.
+    #Args:
+        #pos (tuple): The position of the mouse click.
+    #Returns:
+        #bool: True if the "Save File 1" button is clicked, False otherwise.
     save_file1_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 - 50, 400, 100)
     return save_file1_rect.collidepoint(pos)
 
@@ -356,6 +424,7 @@ def sim_loop():
         clock.tick(60)  # Limit frame rate to 60 FPS
 
 def display_save_screen():
+    #Display the save file options screen with options to select different save files.
     title_font = pygame.font.Font("Abel.ttf", 150)
     button_font = pygame.font.Font("Abel.ttf", 50)
     title_text = title_font.render("Save Files", True, WHITE)

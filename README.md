@@ -6,7 +6,7 @@ Description: The purpose of this software project is to create a solar system si
 
 Instructions: To install the project and its dependencies, including prerequisites, install the following languages and extensions:
 
-Python, Pygame, TBA
+Python, Pygame, Pygame.gfx draw, math, sys
 
 Usage: TBA
 
@@ -27,5 +27,7 @@ Creative Commons / Attribution 4.0 International (CC BY 4.0)
 https://creativecommons.org/licenses/by/4.0/
 
 Sound effects from Mixkit | https://mixkit.co/free-sound-effects/
+
+Code from (CREDITS)
 
 Contact Information: Johnathan.Huang@education.nsw.gov.au

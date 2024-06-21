@@ -31,11 +31,12 @@ distance_font = pygame.font.Font("Abel.ttf", 25)
 
 class Planet:
     AU = 149.6e6 * 1000
-    G = 6.67428e-11
-    SCALE = 250 / AU  # 1AU = 100 pixels
+    G = 16.67428e-11
+    SCALE = 10 / AU  # 1AU = 100 pixels
     TIMESTEP = 3600 * 24  # 1 day
 
-    def __init__(self, x, y, radius, color, mass):
+    def __init__(self, name, x, y, radius, color, mass):
+        self.name = name
         self.x = x
         self.y = y
         self.radius = radius
@@ -171,18 +172,49 @@ def check_save_file_1_click(pos):
     save_file1_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2 - 50, 400, 100)
     return save_file1_rect.collidepoint(pos)
 
-def infoscreen():
+def infoscreen(planets):
     info_font = pygame.font.Font("Abel.ttf", 50)
+    detail_font = pygame.font.Font("Abel.ttf", 25)
     info_title = info_font.render("Info", True, WHITE)
+    screen.fill(GREYHOVER)
     screen.blit(info_title, (WIDTH // 2 - info_title.get_width() // 2, 50))
-    # Additional info screen content can be added here
+
+    # Display constants and scale information
+    start_y = 150
+    Astronomical_Unit = f"1 AU = 149.6e6 km"
+    Gravitational_Constant = f"Gravitational Constant = {Planet.G:.2e} m^3/kg/s^2"
+    Scale = f"Scale = {Planet.SCALE:.2e}"
+
+    au_text = detail_font.render(Astronomical_Unit, True, WHITE)
+    gc_text = detail_font.render(Gravitational_Constant, True, WHITE)
+    scale_text = detail_font.render(Scale, True, WHITE)
+
+    screen.blit(au_text, (WIDTH // 2 - au_text.get_width() // 2, start_y))
+    screen.blit(gc_text, (WIDTH // 2 - gc_text.get_width() // 2, start_y + 25))
+    screen.blit(scale_text, (WIDTH // 2 - scale_text.get_width() // 2, start_y + 50))
+
+    # Adjust start_y for planet information
+    start_y += 100
+
+    # Display planet information
+    for planet in planets:
+        planet_info = f"{planet.name}: Mass={planet.mass:.2e}, Distance to Sun={planet.distance_to_sun / 1.496e11:.2f} AU"
+        info_text = detail_font.render(planet_info, True, WHITE)
+        screen.blit(info_text, (WIDTH // 2 - info_text.get_width() // 2, start_y))
+        start_y += 50
+
     mouse_pos = pygame.mouse.get_pos()
     info_button_rect = pygame.Rect(WIDTH - 100, HEIGHT // 2 - 50, 100, 100)
     if info_button_rect.collidepoint(mouse_pos):
-        info_button_colour = GREYHOVER
+        info_button_colour = RED
     else:
         info_button_colour = GREY
     pygame.draw.rect(screen, info_button_colour, info_button_rect, border_radius=10)
+    info_button_text = detail_font.render("X", True, WHITE)
+    info_button_text_x = info_button_rect.centerx - info_button_text.get_width() // 2
+    info_button_text_y = info_button_rect.centery - info_button_text.get_height() // 2
+    screen.blit(info_button_text, (info_button_text_x, info_button_text_y))
+
     pygame.display.flip()
 
 def sim_loop():
@@ -192,34 +224,34 @@ def sim_loop():
     pygame.mixer.music.set_volume(0.05)
     pygame.mixer.music.play(-1)
 
-    sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
+    sun = Planet("Sun", 0, 0, 30, YELLOW, 1.98892 * 10**30)
     sun.sun = True
 
-    earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
+    earth = Planet("Earth", -1 * Planet.AU, 0, 16, BLUE, 5.9742 * 10**24)
     earth.y_vel = 29.783 * 1000
 
-    mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
+    mars = Planet("Mars", -1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
     mars.y_vel = 24.077 * 1000
 
-    mercury = Planet(0.387 * Planet.AU, 0, 8, GREY, 3.30 * 10**23)
+    mercury = Planet("Mercury", 0.387 * Planet.AU, 0, 8, GREY, 3.30 * 10**23)
     mercury.y_vel = -47.4 * 1000
 
-    venus = Planet(0.723 * Planet.AU, 0, 14, BROWN, 4.8685 * 10**24)
+    venus = Planet("Venus", 0.723 * Planet.AU, 0, 14, BROWN, 4.8685 * 10**24)
     venus.y_vel = -35.02 * 1000
 
-    jupiter = Planet(5.203 * Planet.AU, 0, 20, ORANGE, 1.898 * 10**27)
+    jupiter = Planet("Jupiter", 5.203 * Planet.AU, 0, 20, ORANGE, 1.898 * 10**27)
     jupiter.y_vel = -13.07 * 1000
 
-    saturn = Planet(9.582 * Planet.AU, 0, 18, DARKYELLOW, 5.683 * 10**26)
+    saturn = Planet("Saturn", 9.582 * Planet.AU, 0, 18, DARKYELLOW, 5.683 * 10**26)
     saturn.y_vel = -9.69 * 1000
 
-    uranus = Planet(19.22 * Planet.AU, 0, 16, LIGHTBLUE, 8.681 * 10**25)
+    uranus = Planet("Uranus", 19.22 * Planet.AU, 0, 16, LIGHTBLUE, 8.681 * 10**25)
     uranus.y_vel = -6.81 * 1000
 
-    neptune = Planet(30.05 * Planet.AU, 0, 16, BLUE, 1.024 * 10**26)
+    neptune = Planet("Neptune", 30.05 * Planet.AU, 0, 16, BLUE, 1.024 * 10**26)
     neptune.y_vel = -5.43 * 1000
 
-    pluto = Planet(39.48 * Planet.AU, 0, 8, WHITE, 1.309 * 10**22)
+    pluto = Planet("Pluto", 39.48 * Planet.AU, 0, 8, WHITE, 1.309 * 10**22)
     pluto.y_vel = -4.74 * 1000
 
     planets = [sun, earth, mars, mercury, venus, jupiter, saturn, uranus, neptune, pluto]
@@ -242,7 +274,7 @@ def sim_loop():
                     show_info_screen = not show_info_screen
 
         if show_info_screen:
-            infoscreen()
+            infoscreen(planets)
         else:
             screen.fill(BACKGROUND_COLOUR)
             
